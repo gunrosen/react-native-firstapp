@@ -8,15 +8,20 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View, Button } from 'react-native';
 import firebase from 'firebase';
-import { Header } from './src/components/common';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import reducers from './src/reducers';
+import { Header, Spinner } from './src/components/common';
 /*import AlbumList from './src/components/AlbumList'; */
 import LoginForm from './src/components/LoginForm';
+import LibraryList from './src/components/LibraryList';
 
 
 type Props = {};
 export default class App extends Component<Props> {
+  state = {logginIn: null};
 
   componentWillMount(){
       firebase.initializeApp( {
@@ -26,15 +31,44 @@ export default class App extends Component<Props> {
               projectId: 'authentication-28d02',
               storageBucket: 'authentication-28d02.appspot.com',
               messagingSenderId: '420746767018'
-  });
+              });
+
+      firebase.auth().onAuthStateChanged((user) => {
+                if(user){
+                  this.setState({logginIn: true});
+                } else {
+                  this.setState({logginIn: false});
+                }
+              });
 
   }
+
+
+renderLoginForm(){
+  switch(this.state.logginIn){
+    case true:
+         return (
+           <Button onPress={() => {
+             firebase.auth().signOut();
+             }}  title="Log out"/>
+           );
+    case false:
+         return   <LoginForm/>;
+    default:
+          return <Spinner size="large"/>
+  }
+}
+
   render() {
     return (
-      <View style={{flex:1}}>
-          <Header text='Authentication'></Header>
-          <LoginForm/>
-      </View>
+          /*{this.renderLoginForm()} */
+          <Provider store={createStore(reducers)}>
+            <View style={{flex:1}}>
+              <Header text='Tech Stack'></Header>
+              <LibraryList/>
+            </View>
+          </Provider>
+
     );
   }
 }

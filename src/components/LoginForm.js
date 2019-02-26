@@ -11,12 +11,13 @@ export default class LoginForm extends Component {
             const {email,password} = this.state;
             this.setState({error: '',loading:true});
             firebase.auth().signInWithEmailAndPassword(email,password)
-            .then(this.onLoginSuccess.bind(this))
-            .catch(()=>{
-                  firebase.auth().createUserWithEmailAndPassword(email,password)
-                  .then(this.onLoginSuccess.bind(this) )
-                  .catch( this.onLoginFail.bind(this) );
-            });
+                .then(this.onLoginSuccess.bind(this))
+                .catch(()=>{
+                      firebase.auth().createUserWithEmailAndPassword(email,password)
+                      .then(this.onLoginSuccess.bind(this) )
+                      .catch( this.onLoginFail.bind(this) );
+                });
+            
       }
 
       onLoginSuccess(){
